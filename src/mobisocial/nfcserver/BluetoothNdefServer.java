@@ -17,16 +17,16 @@ import javax.microedition.io.StreamConnectionNotifier;
  *
  */
 public class BluetoothNdefServer {
-	final LocalDevice mLocalDevice;
-	final String mServiceUrl;
-	final AcceptThread mAcceptThread;
-	
 	public static final UUID SERVICE_UUID = UUID.fromString("8ceaa480-4dfc-11e0-b8af-0800200c9a66");
+	final LocalDevice mLocalDevice;
+	final String mLocalBtServiceUrl;
+	final AcceptThread mAcceptThread;
+	private String mServiceUuid = SERVICE_UUID.toString();
 
 	public static void main(String[] args) {
 		try {
-			BluetoothNdefServer server = new BluetoothNdefServer();
-			String serverRef = "ndef+bluetooth://" + server.getLocalAddress() + "/" + SERVICE_UUID;
+			BluetoothNdefServer server = new BluetoothNdefServer(args); //Builder<BluetoothNdefServer>().build();
+			String serverRef = server.getHandoverUrl();
 			System.out.println("Server running on " + serverRef);
 			server.start();
 		} catch (Exception e) {
@@ -34,13 +34,20 @@ public class BluetoothNdefServer {
 		}
 	}
 	
-	public BluetoothNdefServer() throws IOException {
-		mLocalDevice = LocalDevice.getLocalDevice();
-		StringBuilder serviceUrlBuilder = new StringBuilder();
-		serviceUrlBuilder.append("btspp://localhost:" + SERVICE_UUID.toString().replace("-", ""));
-		serviceUrlBuilder.append(";name=NFCHandover;encrypt=false;authenticate=false");
-		mServiceUrl = serviceUrlBuilder.toString();
-		mAcceptThread = new AcceptThread();
+	public BluetoothNdefServer(String... args) {
+		try {
+			if (args.length > 0) {
+				mServiceUuid = args[0];
+			}
+			mLocalDevice = LocalDevice.getLocalDevice();
+			StringBuilder serviceUrlBuilder = new StringBuilder();
+			serviceUrlBuilder.append("btspp://localhost:" + mServiceUuid.replace("-", ""));
+			serviceUrlBuilder.append(";name=NFCHandover;encrypt=false;authenticate=false");
+			mLocalBtServiceUrl = serviceUrlBuilder.toString();
+			mAcceptThread = new AcceptThread();
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 	
 	public void start() {
@@ -60,13 +67,17 @@ public class BluetoothNdefServer {
 		return addrBuilder.substring(0, addrBuilder.length() - 1);
 	}
 	
+	public String getHandoverUrl() {
+		 return "ndef+bluetooth://" + getLocalAddress() + "/" + mServiceUuid;
+	}
+
 	class AcceptThread extends Thread {
 		private boolean mmRunning = true;
 		@Override
 		public void run() {
 			while (mmRunning) {
 				try {
-					StreamConnectionNotifier scn = (StreamConnectionNotifier) Connector.open(mServiceUrl);
+					StreamConnectionNotifier scn = (StreamConnectionNotifier) Connector.open(mLocalBtServiceUrl);
 					StreamConnection conn = scn.acceptAndOpen();
 					new HandoverConnectedThread(new StreamConnectionSocket(conn), DesktopNdefProxy.getInstance()).start();
 					scn.close();
