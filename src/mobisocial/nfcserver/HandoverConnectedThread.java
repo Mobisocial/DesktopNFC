@@ -1,10 +1,14 @@
 package mobisocial.nfcserver;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import mobisocial.nfc.NfcInterface;
+import mobisocial.util.Log;
 
 import android.nfc.NdefMessage;
 
@@ -14,13 +18,13 @@ class HandoverConnectedThread extends Thread {
 	private final DuplexSocket mmSocket;
 	private final InputStream mmInStream;
 	private final OutputStream mmOutStream;
-	private final NdefProxy mmNdefProxy;
+	private final NfcInterface mmNfcInterface;
 
 	private boolean mmIsWriteDone = false;
 	private boolean mmIsReadDone = false;
 
-	public HandoverConnectedThread(DuplexSocket socket, NdefProxy ndefProxy) {
-		mmNdefProxy = ndefProxy;
+	public HandoverConnectedThread(DuplexSocket socket, NfcInterface nfcInterface) {
+		mmNfcInterface = nfcInterface;
 		mmSocket = socket;
 		InputStream tmpIn = null;
 		OutputStream tmpOut = null;
@@ -59,7 +63,7 @@ class HandoverConnectedThread extends Thread {
 					read += dataIn.read(ndefBytes, read, (length - read));
 				}
 				NdefMessage ndef = new NdefMessage(ndefBytes);
-				mmNdefProxy.handleNdef(ndef);
+				mmNfcInterface.handleNdef(ndef);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to issue handover.", e);
@@ -84,7 +88,7 @@ class HandoverConnectedThread extends Thread {
 		@Override
 		public void run() {
 			try {
-				NdefMessage outbound = mmNdefProxy.getForegroundNdefMessage();
+				NdefMessage outbound = mmNfcInterface.getForegroundNdefMessage();
 				DataOutputStream dataOut = new DataOutputStream(mmOutStream);
 				dataOut.writeByte(HANDOVER_VERSION);
 				if (outbound != null) {
@@ -106,5 +110,15 @@ class HandoverConnectedThread extends Thread {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * A wrapper for the standard Socket implementation.
+	 *
+	 */
+	public interface DuplexSocket extends Closeable {
+		public InputStream getInputStream() throws IOException;
+		public OutputStream getOutputStream() throws IOException;
+		public void connect() throws IOException;
 	}
 }

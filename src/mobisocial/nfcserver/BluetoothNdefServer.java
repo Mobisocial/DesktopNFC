@@ -16,7 +16,7 @@ import javax.microedition.io.StreamConnectionNotifier;
  * over Bluetooth to trigger an application invocation.
  *
  */
-public class BluetoothNdefServer {
+public class BluetoothNdefServer implements DesktopNfcServer.Contract {
 	public static final UUID SERVICE_UUID = UUID.fromString("8ceaa480-4dfc-11e0-b8af-0800200c9a66");
 	final LocalDevice mLocalDevice;
 	final String mLocalBtServiceUrl;
@@ -36,8 +36,8 @@ public class BluetoothNdefServer {
 	
 	public BluetoothNdefServer(String... args) {
 		try {
-			if (args.length > 0) {
-				mServiceUuid = args[0];
+			if (args.length > 1) {
+				mServiceUuid = args[1];
 			}
 			mLocalDevice = LocalDevice.getLocalDevice();
 			StringBuilder serviceUrlBuilder = new StringBuilder();
@@ -79,7 +79,7 @@ public class BluetoothNdefServer {
 				try {
 					StreamConnectionNotifier scn = (StreamConnectionNotifier) Connector.open(mLocalBtServiceUrl);
 					StreamConnection conn = scn.acceptAndOpen();
-					new HandoverConnectedThread(new StreamConnectionSocket(conn), DesktopNdefProxy.getInstance()).start();
+					new HandoverConnectedThread(new StreamConnectionSocket(conn), DesktopNfcServer.getInstance()).start();
 					scn.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -88,7 +88,7 @@ public class BluetoothNdefServer {
 		}
 	}
 	
-	class StreamConnectionSocket implements DuplexSocket {
+	class StreamConnectionSocket implements HandoverConnectedThread.DuplexSocket {
 		private StreamConnection mmStreamConnection;
 		private InputStream mmInputStream;
 		private OutputStream mmOutputStream;

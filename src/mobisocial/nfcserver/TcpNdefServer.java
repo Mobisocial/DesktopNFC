@@ -10,16 +10,23 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import mobisocial.util.Log;
+
 /**
  * Emulates an Nfc device, accepting an NDEF message
  * to trigger an application invocation.
  *
  */
-public class TcpNdefServer {
+public class TcpNdefServer implements DesktopNfcServer.Contract {
 	private static final int SERVER_PORT = 7924;
 	private static String TAG = "nfcserver";
 	private AcceptThread mAcceptThread;
+	private final String mHandoverUrl;
 	
+	public TcpNdefServer(String... args) {
+		mHandoverUrl = "ndef+tcp://" + getLocalIpAddress() + ":" + SERVER_PORT;
+	}
+
 	public static void main(String[] args) {		
 		TcpNdefServer server = new TcpNdefServer();
 		server.start();
@@ -31,13 +38,11 @@ public class TcpNdefServer {
 	public void start() {
 		if (mAcceptThread != null) return;
 		
-		String ip = getLocalIpAddress();
-		if (ip == null) {
+		if (mHandoverUrl == null) {
 			System.err.println("Error starting server");
 			return;
 		}
 		
-		System.out.println("Server running on ndef+tcp://" + ip + ":" + SERVER_PORT + ".");
 		mAcceptThread = new AcceptThread();
 		mAcceptThread.start();
 	}
@@ -91,7 +96,7 @@ public class TcpNdefServer {
                 	break;
                 }
                 
-                new HandoverConnectedThread(new TcpDuplexSocket(socket), DesktopNdefProxy.getInstance()).start();
+                new HandoverConnectedThread(new TcpDuplexSocket(socket), DesktopNfcServer.getInstance()).start();
             }
         }
 
@@ -104,7 +109,7 @@ public class TcpNdefServer {
         }
     }
 	
-	class TcpDuplexSocket implements DuplexSocket {
+	class TcpDuplexSocket implements HandoverConnectedThread.DuplexSocket {
 		private final Socket mmSocket;
 		private InputStream mmInputStream;
 		private OutputStream mmOutputStream;
@@ -153,5 +158,10 @@ public class TcpNdefServer {
 
 	    }
 	    return null;
+	}
+
+	@Override
+	public String getHandoverUrl() {
+		return mHandoverUrl;
 	}
 }
