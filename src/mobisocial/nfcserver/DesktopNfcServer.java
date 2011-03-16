@@ -1,19 +1,22 @@
 package mobisocial.nfcserver;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
+import mobisocial.nfcserver.handler.AppManifestHandler;
+import mobisocial.nfcserver.handler.UrlHandler;
 import mobisocial.util.QR;
 
 import android.nfc.NdefMessage;
 
 public class DesktopNfcServer implements NfcInterface {
 	public static DesktopNfcServer sInstance;
+	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
 	
 	public interface Contract {
 		public void start();
@@ -42,7 +45,8 @@ public class DesktopNfcServer implements NfcInterface {
 
 
 	private DesktopNfcServer() {
-		
+		addNdefHandler(new UrlHandler());
+		addNdefHandler(new AppManifestHandler());
 	}
 	
 	public static NfcInterface getInstance() {
@@ -51,8 +55,6 @@ public class DesktopNfcServer implements NfcInterface {
 		}
 		return sInstance;
 	}
-	
-	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
 
 	public void addNdefHandler(NdefHandler handler) {
 		addNdefHandler(NdefHandler.DEFAULT_PRIORITY, handler);
@@ -60,7 +62,7 @@ public class DesktopNfcServer implements NfcInterface {
 	
 	public synchronized void addNdefHandler(Integer priority, NdefHandler handler) {
 		if (!mNdefHandlers.containsKey(priority)) {
-			mNdefHandlers.put(priority, new HashSet<NdefHandler>());
+			mNdefHandlers.put(priority, new LinkedHashSet<NdefHandler>());
 		}
 		Set<NdefHandler> handlers = mNdefHandlers.get(priority);
 		handlers.add(handler);
