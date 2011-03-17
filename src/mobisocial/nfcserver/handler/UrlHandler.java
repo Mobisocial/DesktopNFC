@@ -1,13 +1,9 @@
 package mobisocial.nfcserver.handler;
 
-import java.util.List;
-
 import mobisocial.nfc.NdefHandler;
 import mobisocial.util.Log;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
-import edu.stanford.mobisocial.appmanifest.ApplicationManifest;
-import edu.stanford.mobisocial.appmanifest.platforms.PlatformReference;
 
 public class UrlHandler implements NdefHandler {
 	public static final String TAG = "ndefserver";

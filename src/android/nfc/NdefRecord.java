@@ -16,7 +16,6 @@
 
 package android.nfc;
 
-import java.lang.UnsupportedOperationException;
 import java.nio.ByteBuffer;
 
 /**
@@ -267,13 +266,13 @@ public final class NdefRecord {
     	byte idLength = 0x00;
     	
     	typeLength = buffer.get();
-    	if ((mFlags & 0x10) > 0) {
+    	if ((mFlags & FLAG_SR) > 0) {
     		// short record
     		payloadLength = 0xFF & buffer.get();
     	} else {
     		payloadLength = buffer.getInt();
     	}
-    	if ((mFlags & 0x08) > 0) {
+    	if ((mFlags & FLAG_IL) > 0) {
     		idLength = buffer.get();
     	}
     	
@@ -288,5 +287,43 @@ public final class NdefRecord {
     	
     	return 0;
     }
-    private native byte[] generate(short flags, short tnf, byte[] type, byte[] id, byte[] data);
+    private byte[] generate(short flags, short tnf, byte[] type, byte[] id, byte[] data) {
+    	if (data.length < 255) {
+    		flags = (short)(flags | FLAG_SR);
+    	}
+    	
+    	boolean idPresent = (flags & FLAG_IL) != 0;
+    	boolean shortRecord = (flags & FLAG_SR) != 0;
+    	int fixedBytes = (idPresent) ? 7 : 6;
+    	if (shortRecord) {
+    		fixedBytes -= 3;
+    	}
+    	ByteBuffer record = ByteBuffer.allocate(fixedBytes + id.length + type.length + data.length);
+    	record.put((byte)(flags | tnf));
+    	record.put((byte)(0xFF & type.length));
+
+    	if (!shortRecord) {
+    		record.put((byte)(0xFF & (data.length >>> 24)));
+	    	record.put((byte)(0xFF & (data.length >>> 16)));
+	    	record.put((byte)((0xFF & data.length >>> 8)));
+    	}
+    	record.put((byte)((0xFF & data.length)));
+
+    	if (idPresent) {
+    		record.put((byte)id.length);
+    	}
+    	record.put(type);
+    	record.put(id);
+    	record.put(data);
+    	return record.array();
+    }
+    
+    public static String getHexString(byte[] b) {
+    	  String result = "";
+    	  for (int i=0; i < b.length; i++) {
+    	    result +=
+    	          Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+    	  }
+    	  return result;
+    	}
 }

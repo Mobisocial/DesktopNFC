@@ -13,11 +13,13 @@ import mobisocial.nfcserver.handler.UrlHandler;
 import mobisocial.util.QR;
 
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 
 public class DesktopNfcServer implements NfcInterface {
 	public static DesktopNfcServer sInstance;
 	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
-	
+	private NdefMessage mForegroundNdef = null;
+
 	public interface Contract {
 		public void start();
 		public void stop();
@@ -42,7 +44,6 @@ public class DesktopNfcServer implements NfcInterface {
 			e.printStackTrace();
 		}
 	}
-
 
 	private DesktopNfcServer() {
 		addNdefHandler(new UrlHandler());
@@ -69,6 +70,7 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 	
 	public synchronized void handleNdef(NdefMessage ndef) {
+		mForegroundNdef = ndef;
 		Iterator<Integer> bins = mNdefHandlers.keySet().iterator();
 		while (bins.hasNext()) {
 			Integer priority = bins.next();
@@ -85,6 +87,6 @@ public class DesktopNfcServer implements NfcInterface {
 
 	@Override
 	public NdefMessage getForegroundNdefMessage() {
-		return null; // TODO: fix UnsatisfiedLinkError to support NDEF push.
+		return mForegroundNdef;
 	}
 }

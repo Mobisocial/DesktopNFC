@@ -28,7 +28,6 @@ class HandoverConnectedThread extends Thread {
 		mmSocket = socket;
 		InputStream tmpIn = null;
 		OutputStream tmpOut = null;
-
 		try {
 			socket.connect();
 			tmpIn = socket.getInputStream();
