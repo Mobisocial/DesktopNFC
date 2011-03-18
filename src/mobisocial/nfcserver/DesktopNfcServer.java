@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.binary.Base64;
+
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfcserver.handler.AppManifestHandler;
@@ -37,8 +39,9 @@ public class DesktopNfcServer implements NfcInterface {
 			} else {
 				server = new BluetoothNdefServer(args); //Builder<BluetoothNdefServer>().build();
 			}
+			String content = "ndefb://" + Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
 			System.out.println("Welcome to DesktopNfc!");
-			System.out.println("Your configuration code is: " + QR.getQrl(server.getHandoverUrl()));
+			System.out.println("Your configuration code is: " + QR.getQrl(content));
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,5 +91,24 @@ public class DesktopNfcServer implements NfcInterface {
 	@Override
 	public NdefMessage getForegroundNdefMessage() {
 		return mForegroundNdef;
+	}
+	
+	private static NdefMessage getHandoverNdef(String ref) {
+		NdefRecord[] records = new NdefRecord[3];
+		
+		/* Handover Request */
+		byte[] version = new byte[] { (0x1 << 4) | (0x2) };
+		records[0] = new NdefRecord(NdefRecord.TNF_WELL_KNOWN,
+				NdefRecord.RTD_HANDOVER_REQUEST, new byte[0], version);
+
+		/* Collision Resolution */
+		records[1] = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, new byte[] {
+				0x63, 0x72 }, new byte[0], new byte[] {0x0, 0x0});
+
+		/* Handover record */
+		records[2] = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI,
+				NdefRecord.RTD_URI, new byte[0], ref.getBytes());
+		
+		return new NdefMessage(records);
 	}
 }
