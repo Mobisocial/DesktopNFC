@@ -11,7 +11,9 @@ import org.apache.commons.codec.binary.Base64;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfcserver.handler.AppManifestHandler;
-import mobisocial.nfcserver.handler.UrlHandler;
+import mobisocial.nfcserver.handler.WebUrlHandler;
+import mobisocial.nfcserver.mockdevice.BluetoothNdefServer;
+import mobisocial.nfcserver.mockdevice.TcpNdefServer;
 import mobisocial.util.QR;
 
 import android.nfc.NdefMessage;
@@ -49,8 +51,7 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 
 	private DesktopNfcServer() {
-		addNdefHandler(new UrlHandler());
-		addNdefHandler(new AppManifestHandler());
+		addDefaultNdefHandlers();
 	}
 	
 	public static NfcInterface getInstance() {
@@ -110,5 +111,10 @@ public class DesktopNfcServer implements NfcInterface {
 				NdefRecord.RTD_URI, new byte[0], ref.getBytes());
 		
 		return new NdefMessage(records);
+	}
+	
+	private void addDefaultNdefHandlers() {
+		addNdefHandler(new WebUrlHandler());
+		addNdefHandler(new AppManifestHandler());
 	}
 }

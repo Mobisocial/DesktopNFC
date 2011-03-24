@@ -1,4 +1,4 @@
-package mobisocial.nfcserver;
+package mobisocial.nfcserver.mockdevice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import mobisocial.nfcserver.DesktopNfcServer;
 import mobisocial.util.Log;
 
 /**

@@ -1,4 +1,4 @@
-package mobisocial.nfcserver;
+package mobisocial.nfcserver.mockdevice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
+import mobisocial.nfcserver.DesktopNfcServer;
 
 /**
  * Emulates an Nfc device, accepting an NDEF message
