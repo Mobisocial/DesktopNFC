@@ -1,5 +1,8 @@
 package mobisocial.nfcserver;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -8,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
 
+import mobisocial.nfc.NdefFactory;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfcserver.handler.AppManifestHandler;
@@ -23,6 +27,7 @@ public class DesktopNfcServer implements NfcInterface {
 	public static DesktopNfcServer sInstance;
 	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
 	private NdefMessage mForegroundNdef = null;
+	private boolean ECHO_NDEF = false;
 
 	public interface Contract {
 		public void start();
@@ -43,8 +48,34 @@ public class DesktopNfcServer implements NfcInterface {
 			}
 			String content = "ndefb://" + Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
 			System.out.println("Welcome to DesktopNfc!");
-			System.out.println("Your configuration code is: " + QR.getQrl(content));
+			System.out.println("Service running on " + server.getHandoverUrl());
+			System.out.println("Your configuration QR is: " + QR.getQrl(content));
 			server.start();
+
+			NfcInterface nfc = getInstance();
+			final String PROMPT = "> ";
+			BufferedReader lineReader = new BufferedReader(new InputStreamReader(System.in));
+			while (true) {
+				System.out.print(PROMPT);
+				String line = lineReader.readLine().trim();
+
+				if (line.isEmpty()) {
+					nfc.setForegroundNdefMessage(null);
+					System.out.println("Cleared ndef message.");
+					continue;
+				}
+
+				if (line.contains(":")) {
+					try {
+						nfc.setForegroundNdefMessage(NdefFactory.fromUri(URI.create(line)));
+						System.out.println("NDef set to URI " + line);
+						continue;
+					} catch (IllegalArgumentException e) {}
+				}
+
+				nfc.setForegroundNdefMessage(NdefFactory.fromText(line));
+				System.out.println("NDef set to text \"" + line + "\".");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -74,7 +105,9 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 	
 	public synchronized void handleNdef(NdefMessage ndef) {
-		mForegroundNdef = ndef;
+		if (ECHO_NDEF) {
+			setForegroundNdefMessage(ndef);
+		}
 		Iterator<Integer> bins = mNdefHandlers.keySet().iterator();
 		while (bins.hasNext()) {
 			Integer priority = bins.next();
@@ -87,6 +120,11 @@ public class DesktopNfcServer implements NfcInterface {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setForegroundNdefMessage(NdefMessage ndef) {
+		mForegroundNdef = ndef;
 	}
 
 	@Override
