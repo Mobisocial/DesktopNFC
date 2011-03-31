@@ -63,6 +63,7 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 					}
 					
 					// Download content
+					System.out.println("Downloading " + extension + " file.");
 					HttpGet httpGet = new HttpGet(page);
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpResponse httpResponse = httpClient.execute(httpGet);
@@ -81,7 +82,12 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 					}
 					buffered.close();
 					fileOutStream.close();
-					java.awt.Desktop.getDesktop().open(fileOut);
+					System.out.println("Opening file " + fileOut.getAbsolutePath() + ".");
+					if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+						Runtime.getRuntime().exec("rundll32 SHELL32.DLL,ShellExec_RunDLL "+ fileOut.getAbsolutePath());
+					} else {
+						java.awt.Desktop.getDesktop().open(fileOut);
+					}
 					return NDEF_CONSUME;
 				} catch (Exception e) {
 					e.printStackTrace();

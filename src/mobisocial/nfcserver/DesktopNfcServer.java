@@ -33,6 +33,7 @@ import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.nfcserver.handler.AppManifestHandler;
+import mobisocial.nfcserver.handler.HttpFileHandler;
 import mobisocial.nfcserver.handler.HttpUrlHandler;
 import mobisocial.nfcserver.mockdevice.BluetoothNdefServer;
 import mobisocial.nfcserver.mockdevice.TcpNdefServer;
@@ -175,6 +176,7 @@ public class DesktopNfcServer implements NfcInterface {
 	
 	private void addDefaultNdefHandlers() {
 		addNdefHandler(new HttpUrlHandler());
+		addNdefHandler(new HttpFileHandler());
 		addNdefHandler(new AppManifestHandler());
 	}
 }
