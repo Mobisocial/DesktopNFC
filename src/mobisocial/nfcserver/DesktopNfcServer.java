@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2011 Stanford University MobiSocial Lab
+ * http://mobisocial.stanford.edu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package mobisocial.nfcserver;
 
 import java.io.BufferedReader;
@@ -14,8 +31,9 @@ import org.apache.commons.codec.binary.Base64;
 import mobisocial.nfc.NdefFactory;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
+import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.nfcserver.handler.AppManifestHandler;
-import mobisocial.nfcserver.handler.WebUrlHandler;
+import mobisocial.nfcserver.handler.HttpUrlHandler;
 import mobisocial.nfcserver.mockdevice.BluetoothNdefServer;
 import mobisocial.nfcserver.mockdevice.TcpNdefServer;
 import mobisocial.util.QR;
@@ -93,7 +111,11 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 
 	public void addNdefHandler(NdefHandler handler) {
-		addNdefHandler(NdefHandler.DEFAULT_PRIORITY, handler);
+		if (handler instanceof PrioritizedHandler) {
+			addNdefHandler(((PrioritizedHandler)handler).getPriority(), handler);
+		} else {
+			addNdefHandler(PrioritizedHandler.DEFAULT_PRIORITY, handler);
+		}
 	}
 	
 	public synchronized void addNdefHandler(Integer priority, NdefHandler handler) {
@@ -152,7 +174,7 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 	
 	private void addDefaultNdefHandlers() {
-		addNdefHandler(new WebUrlHandler());
+		addNdefHandler(new HttpUrlHandler());
 		addNdefHandler(new AppManifestHandler());
 	}
 }
