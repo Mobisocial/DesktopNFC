@@ -3,13 +3,14 @@ package mobisocial.nfcserver.handler;
 import java.util.List;
 
 import mobisocial.nfc.NdefHandler;
+import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.util.Log;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import edu.stanford.mobisocial.appmanifest.ApplicationManifest;
 import edu.stanford.mobisocial.appmanifest.platforms.PlatformReference;
 
-public class AppManifestHandler implements NdefHandler {
+public class AppManifestHandler implements NdefHandler, PrioritizedHandler {
 	public static final String TAG = "ndefserver";
 	public int handleNdef(NdefMessage[] ndefMessages) {
 		NdefMessage ndef = ndefMessages[0];
@@ -40,5 +41,9 @@ public class AppManifestHandler implements NdefHandler {
 			Log.e(TAG, "Error launching page", e);
 		}
 		return NDEF_PROPAGATE;
+	}
+	@Override
+	public int getPriority() {
+		return MimeTypeHandler.PRIORITY - 1;
 	}
 }

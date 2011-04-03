@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,6 +37,11 @@ import mobisocial.util.Log;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 
+/**
+ * Looks for certain file types served over HTTP and attempts to
+ * download and open them.
+ *
+ */
 public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 	public static final String TAG = "ndefserver";
 	
@@ -58,7 +61,7 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 				
 				try {
 					String extension = page.toString().substring(page.toString().lastIndexOf(".") + 1);
-					if (!sSupportedExtensions.contains(extension)) {
+					if (!MimeTypeHandler.MIME_EXTENSIONS.containsValue(extension)) {
 						return NDEF_PROPAGATE;
 					}
 					
@@ -78,16 +81,12 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 					while (true) {
 						int r = content.read(buf);
 						if (r <= 0) break;
-						buffered.write(buf);
+						buffered.write(buf, 0, r);
 					}
 					buffered.close();
 					fileOutStream.close();
-					System.out.println("Opening file " + fileOut.getAbsolutePath() + ".");
-					if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-						Runtime.getRuntime().exec("rundll32 SHELL32.DLL,ShellExec_RunDLL "+ fileOut.getAbsolutePath());
-					} else {
-						java.awt.Desktop.getDesktop().open(fileOut);
-					}
+					
+					MimeTypeHandler.openFile(fileOut);
 					return NDEF_CONSUME;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -98,12 +97,6 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 			Log.e(TAG, "Error launching page", e);
 		}
 		return NDEF_PROPAGATE;
-	}
-	
-	public static final Set<String> sSupportedExtensions = new LinkedHashSet<String>();
-	static {
-		sSupportedExtensions.add("m3u");
-		sSupportedExtensions.add("mp3");
 	}
 
 	@Override
