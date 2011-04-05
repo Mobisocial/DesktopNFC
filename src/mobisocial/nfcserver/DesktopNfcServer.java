@@ -33,6 +33,7 @@ import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.nfcserver.handler.AppManifestHandler;
+import mobisocial.nfcserver.handler.EchoNdefHandler;
 import mobisocial.nfcserver.handler.HttpFileHandler;
 import mobisocial.nfcserver.handler.HttpUrlHandler;
 import mobisocial.nfcserver.handler.LogNdefHandler;
@@ -48,7 +49,7 @@ public class DesktopNfcServer implements NfcInterface {
 	public static DesktopNfcServer sInstance;
 	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
 	private NdefMessage mForegroundNdef = null;
-	private boolean ECHO_NDEF = false;
+	private boolean ECHO_NDEF = true;
 
 	public interface Contract {
 		public void start();
@@ -130,9 +131,6 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 	
 	public synchronized void handleNdef(NdefMessage ndef) {
-		if (ECHO_NDEF) {
-			setForegroundNdefMessage(ndef);
-		}
 		Iterator<Integer> bins = mNdefHandlers.keySet().iterator();
 		while (bins.hasNext()) {
 			Integer priority = bins.next();
@@ -182,5 +180,8 @@ public class DesktopNfcServer implements NfcInterface {
 		addNdefHandler(new HttpUrlHandler());
 		addNdefHandler(new HttpFileHandler());
 		addNdefHandler(new AppManifestHandler());
+		if (ECHO_NDEF) {
+			addNdefHandler(new EchoNdefHandler(this));		
+		}
 	}
 }
