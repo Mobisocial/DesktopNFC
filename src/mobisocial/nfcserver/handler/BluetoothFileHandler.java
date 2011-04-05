@@ -16,11 +16,7 @@ import android.nfc.NdefRecord;
  */
 public class BluetoothFileHandler implements NdefHandler {
 	public static final String TAG = "ndefserver";
-	private final NfcInterface mNfcInterface;
 
-	public BluetoothFileHandler(NfcInterface nfcInterface) {
-		mNfcInterface = nfcInterface;
-	}
 	public int handleNdef(NdefMessage[] ndefMessages) {
 		// UriRecord bluetooth+http://...
 		// TODO, do we need to do a true connection handover to
@@ -28,7 +24,7 @@ public class BluetoothFileHandler implements NdefHandler {
 		// 
 		
 		// TODO: Download over bluetooth, then:
-		// mNfcHandler.handleMessage(newMsg);
+		// MimeTypeHandler.openFile(...);
 		return NDEF_PROPAGATE;
 	}
 }
