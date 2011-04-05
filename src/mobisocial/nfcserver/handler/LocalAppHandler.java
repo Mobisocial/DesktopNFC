@@ -16,6 +16,7 @@ import android.nfc.NdefMessage;
  * can send and receive NDEF messages, and messages may
  * be sent to more than one application.
  *
+ * TODO: placeholder.
  */
 public class LocalAppHandler implements NdefHandler {
 	public static final String TAG = "ndefserver";
