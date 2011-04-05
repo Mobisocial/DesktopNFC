@@ -32,6 +32,17 @@ public class NdefFactory {
 			return null;
 		}
 	}
+
+	public static NdefMessage fromUri(String uri) {
+		try {
+			NdefRecord record = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, NdefRecord.RTD_URI, 
+					new byte[0], uri.getBytes());
+			NdefRecord[] records = new NdefRecord[] { record };
+			return new NdefMessage(records);
+		} catch (NoClassDefFoundError e) {
+			return null;
+		}
+	}
 	
 	public static NdefMessage fromMime(String mimeType, byte[] data) {
 		try {
