@@ -67,5 +67,7 @@ public class MimeTypeHandler implements NdefHandler, PrioritizedHandler {
 		ImmutableMap.<String,String>builder()
 		.put("audio/mpegurl", "m3u")
 		.put("audio/x-mpegurl", "m3u")
+		.put("application/msword", "doc")
+		.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx")
 		.build();
 }

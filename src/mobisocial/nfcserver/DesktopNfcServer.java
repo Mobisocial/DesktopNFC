@@ -19,7 +19,6 @@ package mobisocial.nfcserver;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,16 +27,21 @@ import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
 
-import mobisocial.nfc.NdefFactory;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfc.PrioritizedHandler;
+import mobisocial.nfc.ShareHandler;
 import mobisocial.nfcserver.handler.AppManifestHandler;
 import mobisocial.nfcserver.handler.EchoNdefHandler;
 import mobisocial.nfcserver.handler.HttpFileHandler;
 import mobisocial.nfcserver.handler.HttpUrlHandler;
 import mobisocial.nfcserver.handler.LogNdefHandler;
 import mobisocial.nfcserver.handler.MimeTypeHandler;
+import mobisocial.nfcserver.handler.share.LocalFileToMime;
+import mobisocial.nfcserver.handler.share.NdefToNfc;
+import mobisocial.nfcserver.handler.share.ParseLine;
+import mobisocial.nfcserver.handler.share.TextToNdef;
+import mobisocial.nfcserver.handler.share.UriToNdef;
 import mobisocial.nfcserver.mockdevice.BluetoothNdefServer;
 import mobisocial.nfcserver.mockdevice.TcpNdefServer;
 import mobisocial.util.QR;
@@ -48,6 +52,7 @@ import android.nfc.NdefRecord;
 public class DesktopNfcServer implements NfcInterface {
 	public static DesktopNfcServer sInstance;
 	private final Map<Integer, Set<NdefHandler>> mNdefHandlers = new TreeMap<Integer, Set<NdefHandler>>();
+	private final Map<Integer, Set<ShareHandler>> mShareHandlers = new TreeMap<Integer, Set<ShareHandler>>();
 	private NdefMessage mForegroundNdef = null;
 	private boolean ECHO_NDEF = true;
 
@@ -80,23 +85,7 @@ public class DesktopNfcServer implements NfcInterface {
 			while (true) {
 				System.out.print(PROMPT);
 				String line = lineReader.readLine().trim();
-
-				if (line.isEmpty()) {
-					nfc.setForegroundNdefMessage(null);
-					System.out.println("Cleared ndef message.");
-					continue;
-				}
-
-				if (line.contains(":")) {
-					try {
-						nfc.setForegroundNdefMessage(NdefFactory.fromUri(URI.create(line)));
-						System.out.println("NDef set to URI " + line);
-						continue;
-					} catch (IllegalArgumentException e) {}
-				}
-
-				nfc.setForegroundNdefMessage(NdefFactory.fromText(line));
-				System.out.println("NDef set to text \"" + line + "\".");
+				nfc.share(line);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -121,12 +110,28 @@ public class DesktopNfcServer implements NfcInterface {
 			addNdefHandler(PrioritizedHandler.DEFAULT_PRIORITY, handler);
 		}
 	}
-	
+
 	public synchronized void addNdefHandler(Integer priority, NdefHandler handler) {
 		if (!mNdefHandlers.containsKey(priority)) {
 			mNdefHandlers.put(priority, new LinkedHashSet<NdefHandler>());
 		}
 		Set<NdefHandler> handlers = mNdefHandlers.get(priority);
+		handlers.add(handler);
+	}
+
+	public void addShareHandler(ShareHandler handler) {
+		if (handler instanceof PrioritizedHandler) {
+			addShareHandler(((PrioritizedHandler)handler).getPriority(), handler);
+		} else {
+			addShareHandler(PrioritizedHandler.DEFAULT_PRIORITY, handler);
+		}
+	}
+
+	public synchronized void addShareHandler(Integer priority, ShareHandler handler) {
+		if (!mShareHandlers.containsKey(priority)) {
+			mShareHandlers.put(priority, new LinkedHashSet<ShareHandler>());
+		}
+		Set<ShareHandler> handlers = mShareHandlers.get(priority);
 		handlers.add(handler);
 	}
 	
@@ -146,8 +151,20 @@ public class DesktopNfcServer implements NfcInterface {
 	}
 
 	@Override
-	public void setForegroundNdefMessage(NdefMessage ndef) {
+	public void setForegroundNdefMessage(final NdefMessage ndef) { /* ImutableNdef */
 		mForegroundNdef = ndef;
+	}
+	
+	public void share(Object shared) {
+		Iterator<Integer> bins = mShareHandlers.keySet().iterator();
+		while (bins.hasNext()) {
+			Integer priority = bins.next();
+			Iterator<ShareHandler> handlers = mShareHandlers.get(priority).iterator();
+			while (handlers.hasNext()) {
+				ShareHandler handler = handlers.next();
+				shared = handler.handleShare(shared);
+			}
+		}
 	}
 
 	@Override
@@ -183,5 +200,11 @@ public class DesktopNfcServer implements NfcInterface {
 		if (ECHO_NDEF) {
 			addNdefHandler(new EchoNdefHandler(this));		
 		}
+		
+		addShareHandler(new ParseLine());
+		addShareHandler(new TextToNdef());
+		addShareHandler(new UriToNdef());
+		addShareHandler(new LocalFileToMime());
+		addShareHandler(new NdefToNfc(this));
 	}
 }
