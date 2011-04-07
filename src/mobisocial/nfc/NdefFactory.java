@@ -96,4 +96,16 @@ public class NdefFactory {
 			return null;
 		}
 	}
+
+	public static final NdefMessage getEmptyNdef() {
+		byte[] empty = new byte[] {};
+		NdefRecord[] records = new NdefRecord[1];
+		records[0] = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, empty, empty, empty);
+		NdefMessage ndef = new NdefMessage(records);
+		return ndef;
+	}
+
+	public static final boolean isEmpty(NdefMessage ndef) {
+		return  (ndef == null || ndef.equals(getEmptyNdef()));
+	}
 }

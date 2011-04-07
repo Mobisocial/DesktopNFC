@@ -37,6 +37,7 @@ import mobisocial.nfcserver.handler.HttpFileHandler;
 import mobisocial.nfcserver.handler.HttpUrlHandler;
 import mobisocial.nfcserver.handler.LogNdefHandler;
 import mobisocial.nfcserver.handler.MimeTypeHandler;
+import mobisocial.nfcserver.handler.NdefExchangeHandoverHandler;
 import mobisocial.nfcserver.handler.share.LocalFileToMime;
 import mobisocial.nfcserver.handler.share.NdefToNfc;
 import mobisocial.nfcserver.handler.share.ParseLine;
@@ -205,5 +206,7 @@ public class DesktopNfcServer implements NfcInterface {
 		addShareHandler(new UriToNdef());
 		addShareHandler(new LocalFileToMime());
 		addShareHandler(new NdefToNfc(this));
+
+		NdefExchangeHandoverHandler.prepare(this);
 	}
 }
