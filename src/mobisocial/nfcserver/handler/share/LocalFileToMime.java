@@ -39,7 +39,7 @@ public class LocalFileToMime implements ShareHandler, PrioritizedHandler {
 			// Share InputStream instead of bytes.
 			byte[] bytes = null;
 			try {
-				byte[] buffer = new byte[1024 * 100];
+				byte[] buffer = new byte[1024 * 1024 * 5];
 				FileInputStream fin = new FileInputStream(file);
 				int r = fin.read(buffer, 0, buffer.length);
 				bytes = Arrays.copyOf(buffer, r);

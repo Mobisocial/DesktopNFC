@@ -135,15 +135,14 @@ public class DesktopNfcServer implements NfcInterface {
 		handlers.add(handler);
 	}
 	
-	public synchronized void handleNdef(NdefMessage ndef) {
+	public synchronized void handleNdef(NdefMessage[] ndef) {
 		Iterator<Integer> bins = mNdefHandlers.keySet().iterator();
 		while (bins.hasNext()) {
 			Integer priority = bins.next();
 			Iterator<NdefHandler> handlers = mNdefHandlers.get(priority).iterator();
-			NdefMessage[] ndefs = new NdefMessage[] { ndef }; // compatibility with NdefHandler.
 			while (handlers.hasNext()) {
 				NdefHandler handler = handlers.next();
-				if (handler.handleNdef(ndefs) == NdefHandler.NDEF_CONSUME) {
+				if (handler.handleNdef(ndef) == NdefHandler.NDEF_CONSUME) {
 					return;
 				}
 			}

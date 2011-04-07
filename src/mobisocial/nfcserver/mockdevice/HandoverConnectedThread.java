@@ -62,7 +62,8 @@ class HandoverConnectedThread extends Thread {
 					read += dataIn.read(ndefBytes, read, (length - read));
 				}
 				NdefMessage ndef = new NdefMessage(ndefBytes);
-				mmNfcInterface.handleNdef(ndef);
+				// TODO: use a different handover version to send multiple ndef.
+				mmNfcInterface.handleNdef(new NdefMessage[] {ndef});
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to issue handover.", e);
