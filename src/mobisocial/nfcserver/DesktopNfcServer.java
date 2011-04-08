@@ -74,7 +74,7 @@ public class DesktopNfcServer implements NfcInterface {
 			} else {
 				server = new BluetoothNdefServer(args); //Builder<BluetoothNdefServer>().build();
 			}
-			String content = "ndefb://" + Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
+			String content = "tato://hr/" + Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
 			System.out.println("Welcome to DesktopNfc!");
 			System.out.println("Service running on " + server.getHandoverUrl());
 			System.out.println("Your configuration QR is: " + QR.getQrl(content));
