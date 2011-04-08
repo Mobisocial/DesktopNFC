@@ -27,9 +27,18 @@ public class LocalFileToMime implements ShareHandler, PrioritizedHandler {
 		}
 		
 		if (shared instanceof String) {
-			if (((String)shared).startsWith("/")) {
-				// TODO: cross platform
-				file = new File((String)shared);
+			// TODO: cross platform.
+			// Coded for Gnome / Linux.
+			String name = ((String) shared).trim();
+			if (name.startsWith("'")) {
+				name = name.substring(1);
+			}
+			if (name.endsWith("'")) {
+				name = name.substring(0, name.length() - 1);
+			}
+
+			if (name.startsWith("/")) {
+				file = new File(name);
 			}
 		}
 		

@@ -53,9 +53,8 @@ public class NdefExchangeHandoverHandler implements NdefHandler, PrioritizedHand
 	// From the user.
 	@Override
 	public Object handleShare(Object shared) {
-		NdefMessage ndef = (NdefMessage) shared;
 		if (shared == null ||
-				(shared instanceof NdefMessage && NdefFactory.isEmpty((NdefMessage)ndef))) {
+				(shared instanceof NdefMessage && NdefFactory.isEmpty((NdefMessage)shared))) {
 			System.out.println("Cleared ndef exchange handover.");
 			mPendingNdefExchange = null;
 			return null;
