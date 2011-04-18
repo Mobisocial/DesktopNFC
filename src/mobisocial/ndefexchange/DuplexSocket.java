@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import java.io.Closeable;
 import java.io.IOException;

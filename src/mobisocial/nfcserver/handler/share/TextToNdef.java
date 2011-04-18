@@ -7,7 +7,7 @@ import mobisocial.nfc.ShareHandler;
 public class TextToNdef implements ShareHandler, PrioritizedHandler {
 	public static final int PRIORITY = 40;
 
-	@Override
+	//@Override
 	public Object handleShare(Object shared) {
 		if (shared instanceof String) {
 			System.out.println("[string] to [ndef]");
@@ -16,7 +16,7 @@ public class TextToNdef implements ShareHandler, PrioritizedHandler {
 		return shared;
 	}
 	
-	@Override
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}

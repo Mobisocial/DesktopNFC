@@ -98,22 +98,22 @@ public class BluetoothNdefServer implements DesktopNfcServer.Contract {
 			mmStreamConnection = conn;
 		}
 		
-		@Override
+		//@Override
 		public void close() throws IOException {
 			mmStreamConnection.close();
 		}
 
-		@Override
+		//@Override
 		public InputStream getInputStream() throws IOException {
 			return mmInputStream;
 		}
 
-		@Override
+		//@Override
 		public OutputStream getOutputStream() throws IOException {
 			return mmOutputStream;
 		}
 
-		@Override
+		//@Override
 		public void connect() throws IOException {
 			mmInputStream = mmStreamConnection.openInputStream();
 			mmOutputStream = mmStreamConnection.openOutputStream();

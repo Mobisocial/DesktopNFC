@@ -99,7 +99,7 @@ public class HttpFileHandler implements NdefHandler, PrioritizedHandler{
 		return NDEF_PROPAGATE;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return HttpUrlHandler.HTTP_URL_PRIORITY - 1;
 	}

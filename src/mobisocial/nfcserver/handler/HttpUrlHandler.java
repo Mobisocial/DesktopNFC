@@ -17,6 +17,8 @@
 
 package mobisocial.nfcserver.handler;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.net.URI;
 
 import com.android.apps.tag.record.UriRecord;
@@ -41,7 +43,7 @@ public class HttpUrlHandler implements NdefHandler, PrioritizedHandler{
 		try {	
 			if (page != null && (page.getScheme().startsWith("http"))) {
 				System.out.println("Opening page " + page);
-				java.awt.Desktop.getDesktop().browse(page);
+				openWebpage(page);
 				return NDEF_CONSUME;
 			}
 		} catch (Exception e) {
@@ -50,8 +52,24 @@ public class HttpUrlHandler implements NdefHandler, PrioritizedHandler{
 		return NDEF_PROPAGATE;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return HTTP_URL_PRIORITY ;
+	}
+
+	public static final void openWebpage(URI page) throws IOException {
+		String osName = System.getProperty("os.name");
+		if (osName.startsWith("Mac OS")) {
+			try {
+	        Class.forName("com.apple.eio.FileManager").getDeclaredMethod(
+	                "openURL", new Class[] {String.class}).invoke(null,
+	                new Object[] {page.toString()});
+	         } catch (Exception e) {
+	        	 System.err.println("Error opening file on mac.");
+	        	 e.printStackTrace();
+	         }
+		} else {
+			java.awt.Desktop.getDesktop().browse(page);
+		}
 	}
 }

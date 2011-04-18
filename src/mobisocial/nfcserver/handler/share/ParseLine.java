@@ -8,7 +8,7 @@ import mobisocial.nfc.ShareHandler;
 public class ParseLine implements ShareHandler, PrioritizedHandler {
 	public static final int PRIORITY = 0;
 
-	@Override
+	//@Override
 	public Object handleShare(Object shared) {
 		if (!(shared instanceof String)) {
 			// TODO error?
@@ -18,7 +18,7 @@ public class ParseLine implements ShareHandler, PrioritizedHandler {
 		System.out.println("[user]: " + shared);
 
 		String line = (String) shared;
-		if (line.isEmpty()) {
+		if (line == null || line.length() == 0) {
 			System.out.println("From [parsed] to [empty]");
 			return null;
 		}
@@ -35,7 +35,7 @@ public class ParseLine implements ShareHandler, PrioritizedHandler {
 		return shared;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}

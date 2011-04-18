@@ -14,7 +14,7 @@ import mobisocial.nfcserver.handler.MimeTypeHandler;
 public class LocalFileToMime implements ShareHandler, PrioritizedHandler {
 	public static final int PRIORITY = 30;
 	
-	@Override
+	//@Override
 	public Object handleShare(Object shared) {
 		// TODO: instanceof uri
 		File file = null;
@@ -76,7 +76,7 @@ public class LocalFileToMime implements ShareHandler, PrioritizedHandler {
 		return shared;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}

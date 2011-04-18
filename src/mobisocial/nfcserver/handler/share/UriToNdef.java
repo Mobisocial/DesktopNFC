@@ -9,7 +9,7 @@ import mobisocial.nfc.ShareHandler;
 public class UriToNdef implements ShareHandler, PrioritizedHandler {
 	public static final int PRIORITY = 40;
 
-	@Override
+	//@Override
 	public Object handleShare(Object shared) {
 		if (shared instanceof URI) {
 			System.out.println("From [uri] to [ndef]");
@@ -19,7 +19,7 @@ public class UriToNdef implements ShareHandler, PrioritizedHandler {
 		return shared;
 	}
 	
-	@Override
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}

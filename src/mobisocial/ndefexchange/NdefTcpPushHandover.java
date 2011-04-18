@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,7 +21,7 @@ import android.nfc.NdefRecord;
 public class NdefTcpPushHandover implements ConnectionHandover {
 	private static final int DEFAULT_TCP_HANDOVER_PORT = 7924;
 	
-	@Override
+	//@Override
 	public boolean supportsRequest(NdefRecord handoverRequest) {
 		if (handoverRequest.getTnf() != NdefRecord.TNF_ABSOLUTE_URI
 				|| !Arrays.equals(handoverRequest.getType(), NdefRecord.RTD_URI)) {
@@ -36,7 +36,7 @@ public class NdefTcpPushHandover implements ConnectionHandover {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void doConnectionHandover(NdefMessage handoverMessage, int record, NfcInterface nfcInterface) throws IOException {
 		NdefRecord handoverRequest = handoverMessage.getRecords()[record];
 		NdefMessage outboundNdef = nfcInterface.getForegroundNdefMessage();

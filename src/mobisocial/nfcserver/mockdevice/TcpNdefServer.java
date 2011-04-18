@@ -118,22 +118,22 @@ public class TcpNdefServer implements DesktopNfcServer.Contract {
 			mmSocket = socket;
 		}
 		
-		@Override
+		//@Override
 		public void close() throws IOException {
 			mmSocket.close();
 		}
 
-		@Override
+		//@Override
 		public InputStream getInputStream() throws IOException {
 			return mmInputStream;
 		}
 
-		@Override
+		//@Override
 		public OutputStream getOutputStream() throws IOException {
 			return mmOutputStream;
 		}
 
-		@Override
+		//@Override
 		public void connect() throws IOException {
 			mmInputStream = mmSocket.getInputStream();
 			mmOutputStream = mmSocket.getOutputStream();
@@ -161,7 +161,7 @@ public class TcpNdefServer implements DesktopNfcServer.Contract {
 	    return null;
 	}
 
-	@Override
+	//@Override
 	public String getHandoverUrl() {
 		return mHandoverUrl;
 	}

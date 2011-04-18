@@ -27,6 +27,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
 
+import mobisocial.ndefexchange.ConnectionHandoverManager;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfc.PrioritizedHandler;
@@ -74,7 +75,8 @@ public class DesktopNfcServer implements NfcInterface {
 			} else {
 				server = new BluetoothNdefServer(args); //Builder<BluetoothNdefServer>().build();
 			}
-			String content = "tato://hr/" + Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
+			String content = ConnectionHandoverManager.USER_HANDOVER_PREFIX +
+				Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
 			System.out.println("Welcome to DesktopNfc!");
 			System.out.println("Service running on " + server.getHandoverUrl());
 			System.out.println("Your configuration QR is: " + QR.getQrl(content));
@@ -150,7 +152,7 @@ public class DesktopNfcServer implements NfcInterface {
 		}
 	}
 
-	@Override
+	//@Override
 	public void setForegroundNdefMessage(final NdefMessage ndef) { /* ImutableNdef */
 		mForegroundNdef = ndef;
 	}
@@ -167,7 +169,7 @@ public class DesktopNfcServer implements NfcInterface {
 		}
 	}
 
-	@Override
+	//@Override
 	public NdefMessage getForegroundNdefMessage() {
 		return mForegroundNdef;
 	}

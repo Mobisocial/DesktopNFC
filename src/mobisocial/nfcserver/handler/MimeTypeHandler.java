@@ -40,15 +40,19 @@ public class MimeTypeHandler implements NdefHandler, PrioritizedHandler {
 		}
 		return NDEF_PROPAGATE;
 	}
-	@Override
+
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}
 	
 	public static void openFile(File file) throws IOException {
 		System.out.println("Opening file " + file.getAbsolutePath() + ".");
-		if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+		String osName = System.getProperty("os.name");
+		if (osName.toLowerCase().startsWith("windows")) {
 			Runtime.getRuntime().exec("rundll32 SHELL32.DLL,ShellExec_RunDLL "+ file.getAbsolutePath());
+		} else if (osName.startsWith("Mac OS")) {
+			Runtime.getRuntime().exec("open " + file.getAbsolutePath());
 		} else {
 			java.awt.Desktop.getDesktop().open(file);
 		}

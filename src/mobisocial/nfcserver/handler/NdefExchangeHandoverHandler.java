@@ -1,12 +1,12 @@
 package mobisocial.nfcserver.handler;
 
+import mobisocial.ndefexchange.ConnectionHandoverManager;
+import mobisocial.ndefexchange.PendingNdefExchange;
 import mobisocial.nfc.NdefFactory;
 import mobisocial.nfc.NdefHandler;
 import mobisocial.nfc.NfcInterface;
 import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.nfc.ShareHandler;
-import mobisocial.nfc.ndefexchange.ConnectionHandoverManager;
-import mobisocial.nfc.ndefexchange.PendingNdefExchange;
 import mobisocial.nfcserver.DesktopNfcServer;
 import android.nfc.NdefMessage;
 
@@ -27,7 +27,7 @@ public class NdefExchangeHandoverHandler implements NdefHandler, PrioritizedHand
 	}
 
 	// From the wire.
-	@Override
+	//@Override
 	public int handleNdef(NdefMessage[] ndefMessages) {
 		NdefMessage ndef = ndefMessages[0];
 		
@@ -44,14 +44,15 @@ public class NdefExchangeHandoverHandler implements NdefHandler, PrioritizedHand
 		}
 		return NDEF_PROPAGATE;
 	}
-	@Override
+
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}
 
 
 	// From the user.
-	@Override
+	//@Override
 	public Object handleShare(Object shared) {
 		if (shared == null ||
 				(shared instanceof NdefMessage && NdefFactory.isEmpty((NdefMessage)shared))) {

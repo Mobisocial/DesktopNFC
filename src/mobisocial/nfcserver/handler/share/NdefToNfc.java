@@ -12,7 +12,8 @@ public class NdefToNfc implements ShareHandler {
 	public NdefToNfc(NfcInterface nfcInterface) {
 		mNfcInterface = nfcInterface;
 	}
-	@Override
+
+	//@Override
 	public Object handleShare(Object shared) {
 		if (shared == null) {
 			System.out.println("from [empty] to [nfc]");

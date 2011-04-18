@@ -117,7 +117,7 @@ public class UriRecord {
     /** Parse and absolute URI record */
     private static UriRecord parseAbsolute(NdefRecord record) {
         byte[] payload = record.getPayload();
-        URI uri = URI.create(new String(payload, Charset.forName("UTF-8")));
+        URI uri = URI.create(new String(payload/*, Charset.forName("UTF-8")*/));
         return new UriRecord(uri);
     }
 

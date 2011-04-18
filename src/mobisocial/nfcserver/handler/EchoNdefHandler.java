@@ -24,7 +24,7 @@ public class EchoNdefHandler implements NdefHandler, PrioritizedHandler {
 		return NDEF_PROPAGATE;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return PRIORITY;
 	}

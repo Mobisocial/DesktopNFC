@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,22 +12,22 @@ public class TcpDuplexSocket implements DuplexSocket {
 			mSocket = new Socket(host, port);
 		}
 		
-		@Override
+		//@Override
 		public void connect() throws IOException {
 			
 		}
 		
-		@Override
+		//@Override
 		public InputStream getInputStream() throws IOException {
 			return mSocket.getInputStream();
 		}
 		
-		@Override
+		//@Override
 		public OutputStream getOutputStream() throws IOException {
 			return mSocket.getOutputStream();
 		}
 		
-		@Override
+		//@Override
 		public void close() throws IOException {
 			mSocket.close();
 		}

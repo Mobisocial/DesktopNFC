@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import mobisocial.nfc.PrioritizedHandler;
 import mobisocial.util.Log;
 
 public class ConnectionHandoverManager implements NdefHandler, PrioritizedHandler {
-	public static final String USER_HANDOVER_PREFIX = "tato://hr/";
+	public static final String USER_HANDOVER_PREFIX = "ndef://wkt:hr/";
 	public static final String TAG = "connectionhandover";
 	public static final int HANDOVER_PRIORITY = 5;
 	private final Set<ConnectionHandover> mmConnectionHandovers = new LinkedHashSet<ConnectionHandover>();
@@ -47,7 +47,7 @@ public class ConnectionHandoverManager implements NdefHandler, PrioritizedHandle
 		return mmConnectionHandovers;
 	}
 	
-	@Override
+	//@Override
 	public final int handleNdef(NdefMessage[] handoverRequest) {
 		// TODO: What does this mean?
 		return doHandover(handoverRequest[0], mNfc.getForegroundNdefMessage());
@@ -78,7 +78,7 @@ public class ConnectionHandoverManager implements NdefHandler, PrioritizedHandle
 		return NDEF_PROPAGATE;
 	}
 
-	@Override
+	//@Override
 	public int getPriority() {
 		return HANDOVER_PRIORITY;
 	}

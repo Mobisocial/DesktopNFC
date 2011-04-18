@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import mobisocial.nfc.NfcInterface;
 import android.nfc.NdefMessage;

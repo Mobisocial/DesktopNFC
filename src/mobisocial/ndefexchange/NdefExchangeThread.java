@@ -1,4 +1,4 @@
-package mobisocial.nfc.ndefexchange;
+package mobisocial.ndefexchange;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
