@@ -44,8 +44,8 @@ import mobisocial.nfcserver.handler.share.NdefToNfc;
 import mobisocial.nfcserver.handler.share.ParseLine;
 import mobisocial.nfcserver.handler.share.TextToNdef;
 import mobisocial.nfcserver.handler.share.UriToNdef;
-import mobisocial.nfcserver.mockdevice.BluetoothNdefServer;
-import mobisocial.nfcserver.mockdevice.TcpNdefServer;
+import mobisocial.nfcserver.impl.BluetoothNdefServer;
+import mobisocial.nfcserver.impl.TcpNdefServer;
 import mobisocial.util.QR;
 
 import android.nfc.NdefMessage;

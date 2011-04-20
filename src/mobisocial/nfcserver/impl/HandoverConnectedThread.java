@@ -1,4 +1,4 @@
-package mobisocial.nfcserver.mockdevice;
+package mobisocial.nfcserver.impl;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
