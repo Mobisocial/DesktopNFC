@@ -9,6 +9,7 @@ public class LogNdefHandler implements NdefHandler, PrioritizedHandler {
 	public static final String TAG = "ndefserver";
 	public int handleNdef(NdefMessage[] ndefMessages) {
 		System.out.println("Received an ndef with TNF " + ndefMessages[0].getRecords()[0].getTnf());
+		System.out.println("    " + new String(ndefMessages[0].getRecords()[0].getPayload()));
 		return NDEF_PROPAGATE;
 	}
 

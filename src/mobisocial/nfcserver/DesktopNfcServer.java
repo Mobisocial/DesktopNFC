@@ -19,6 +19,7 @@ package mobisocial.nfcserver;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -45,6 +46,7 @@ import mobisocial.nfcserver.handler.share.ParseLine;
 import mobisocial.nfcserver.handler.share.TextToNdef;
 import mobisocial.nfcserver.handler.share.UriToNdef;
 import mobisocial.nfcserver.impl.BluetoothNdefServer;
+import mobisocial.nfcserver.impl.JunctionNdefServer;
 import mobisocial.nfcserver.impl.TcpNdefServer;
 import mobisocial.util.QR;
 
@@ -72,14 +74,16 @@ public class DesktopNfcServer implements NfcInterface {
 			Contract server;
 			if (args.length > 0 && args[0].equals("tcp")) { // recoverable failure; if args is null, length == 0.
 				server = new TcpNdefServer(args);
-			} else {
+			} else if (args.length > 0 && args[0].equals("junction")) {
+				server = new JunctionNdefServer(args);
+			}  else {
 				server = new BluetoothNdefServer(args); //Builder<BluetoothNdefServer>().build();
 			}
 			String content = ConnectionHandoverManager.USER_HANDOVER_PREFIX +
 				Base64.encodeBase64URLSafeString(getHandoverNdef(server.getHandoverUrl()).toByteArray());
 			System.out.println("Welcome to DesktopNfc!");
 			System.out.println("Service running on " + server.getHandoverUrl());
-			System.out.println("Your configuration QR is: " + QR.getQrl(content));
+			System.out.println("Your configuration QR is: " + QR.getQrl(content)); // QRL
 			server.start();
 
 			NfcInterface nfc = getInstance();
@@ -187,8 +191,10 @@ public class DesktopNfcServer implements NfcInterface {
 				0x63, 0x72 }, new byte[0], new byte[] {0x0, 0x0});
 
 		/* Handover record */
-		records[2] = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI,
-				NdefRecord.RTD_URI, new byte[0], ref.getBytes());
+		byte[] payload = new byte[ref.length() + 1];
+		System.arraycopy(ref.getBytes(), 0, payload, 1, ref.length());
+		records[2] = new NdefRecord(NdefRecord.TNF_WELL_KNOWN,
+				NdefRecord.RTD_URI, new byte[0], payload);
 		
 		return new NdefMessage(records);
 	}

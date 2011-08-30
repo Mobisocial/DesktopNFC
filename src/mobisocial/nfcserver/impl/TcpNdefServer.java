@@ -23,9 +23,15 @@ public class TcpNdefServer implements DesktopNfcServer.Contract {
 	private static String TAG = "nfcserver";
 	private AcceptThread mAcceptThread;
 	private final String mHandoverUrl;
+	private final String mAddress;
 	
 	public TcpNdefServer(String... args) {
-		mHandoverUrl = "ndef+tcp://" + getLocalIpAddress() + ":" + SERVER_PORT;
+	    if (args.length >= 2) {
+	        mAddress = args[1];
+	    } else {
+	        mAddress = getLocalIpAddress();
+	    }
+		mHandoverUrl = "ndef+tcp://" + mAddress + ":" + SERVER_PORT;
 	}
 
 	public static void main(String[] args) {		
@@ -64,7 +70,7 @@ public class TcpNdefServer implements DesktopNfcServer.Contract {
             
             // Create a new listening server socket
             try {
-                tmp = new ServerSocket(SERVER_PORT);
+                tmp = new ServerSocket(SERVER_PORT, 50, InetAddress.getByName(mAddress));
             } catch (IOException e) {
                 System.err.println("Could not open server socket");
                 e.printStackTrace(System.err);
@@ -76,6 +82,10 @@ public class TcpNdefServer implements DesktopNfcServer.Contract {
             //Log.d(TAG, "BEGIN mAcceptThread" + this);
             setName("AcceptThread");
             Socket socket = null;
+
+            if (mmServerSocket == null) {
+                return;
+            }
 
             // Listen to the server socket always
             while (true) {
